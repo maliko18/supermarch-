@@ -20,7 +20,10 @@ const CATEGORY_ICONS = {
 function Home() {
   const [categories, setCategories] = useState([]);
   const [counts, setCounts] = useState({});
+  const [allProduits, setAllProduits] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -35,6 +38,7 @@ function Home() {
           countMap[p.categorie_id] = (countMap[p.categorie_id] || 0) + 1;
         });
         setCounts(countMap);
+        setAllProduits(produits);
       } catch (err) {
         console.error("Erreur chargement catégories", err);
       } finally {
@@ -43,6 +47,15 @@ function Home() {
     }
     load();
   }, []);
+
+  const filteredProduits = allProduits.filter(
+    (p) =>
+      p.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.categorie_nom &&
+        p.categorie_nom.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (p.code_barres &&
+        p.code_barres.toLowerCase().includes(searchTerm.toLowerCase())),
+  );
 
   if (loading) return <div className="loading">Chargement...</div>;
 
@@ -63,6 +76,11 @@ function Home() {
             Veuillez sélectionner une catégorie pour gérer l'inventaire et les
             réapprovisionnements.
           </p>
+          <div className="home-header-actions">
+            <button className="btn-search" onClick={() => setSearchOpen(true)}>
+              🔍 Rechercher un produit
+            </button>
+          </div>
         </div>
         <div className="categories-grid">
           {categories.map((cat) => {
@@ -92,6 +110,60 @@ function Home() {
           <span>📋 SYSTÈME DE GESTION CENTRALISÉ</span>
         </footer>
       </div>
+
+      {searchOpen && (
+        <div
+          className="search-modal-overlay"
+          onClick={() => setSearchOpen(false)}
+        >
+          <div className="search-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="search-modal-header">
+              <h2>Recherche globale</h2>
+              <button
+                className="search-modal-close"
+                onClick={() => setSearchOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Tapez un nom, une catégorie ou un code-barres..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              autoFocus
+            />
+
+            <div className="search-results">
+              {searchTerm && filteredProduits.length === 0 && (
+                <p className="search-empty">
+                  Aucun résultat pour "{searchTerm}"
+                </p>
+              )}
+
+              {filteredProduits.slice(0, 20).map((p) => (
+                <Link
+                  key={p.id}
+                  to={`/produits/${p.id}`}
+                  className="search-result-item"
+                  onClick={() => {
+                    setSearchOpen(false);
+                    setSearchTerm("");
+                  }}
+                >
+                  <div>
+                    <strong>{p.nom}</strong>
+                    <p>{p.categorie_nom}</p>
+                  </div>
+                  <span>{p.quantite} unités</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

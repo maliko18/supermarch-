@@ -1,8 +1,8 @@
-const ProductModel = require('../models/product.model');
+const ProductModel = require("../models/product.model");
 
 const StockService = {
-  async getAllProducts() {
-    return ProductModel.getAll();
+  async getAllProducts(filters) {
+    return ProductModel.getAll(filters);
   },
 
   async getProductById(id) {
@@ -35,7 +35,15 @@ const StockService = {
 
   async getAllCategories() {
     return ProductModel.getAllCategories();
-  }
+  },
+
+  async logProductAction(data) {
+    return ProductModel.logAction(data);
+  },
+
+  async getJournal(limit) {
+    return ProductModel.getLogs(limit);
+  },
 };
 
 module.exports = StockService;

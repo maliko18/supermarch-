@@ -18,6 +18,16 @@ CREATE TABLE IF NOT EXISTS produits (
   FOREIGN KEY (categorie_id) REFERENCES categories(id)
 );
 
+CREATE TABLE IF NOT EXISTS stock_logs (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  action VARCHAR(20) NOT NULL,
+  produit_id INT NULL,
+  produit_nom VARCHAR(255) NOT NULL,
+  actor VARCHAR(100) DEFAULT 'StockManager',
+  details TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Données initiales : catégories (selon maquettes)
 INSERT INTO categories (nom) VALUES
   ('Produits Frais'),
