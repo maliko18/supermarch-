@@ -5,19 +5,34 @@ const AIService = {
   async analyserStock(question) {
     const context = await StockService.getStockSummary();
 
-    const systemPrompt = `Tu es un assistant intelligent de gestion de stock pour un supermarché.
-Voici l'état actuel du stock :
+    const alertesText =
+      context.alertes.length > 0
+        ? context.alertes
+            .map(
+              (a) =>
+                `  • ${a.nom} (${a.categorie}) : ${a.quantite} unités restantes / seuil : ${a.seuil_alerte}`,
+            )
+            .join("\n")
+        : "  Aucun produit en alerte.";
 
-- Nombre total de produits : ${context.total_produits}
-- Produits en alerte (stock faible) : ${context.produits_en_alerte}
+    const systemPrompt = `Tu es un assistant expert en gestion de stock pour un supermarché. Tu réponds toujours en français, de façon claire, structurée et professionnelle.
 
-Répartition par catégorie :
-${context.par_categorie.map((c) => `  - ${c.categorie} : ${c.nb_produits} produits, ${c.stock_total} unités en stock`).join("\n")}
+📦 ÉTAT ACTUEL DU STOCK :
+- Total produits référencés : ${context.total_produits}
+- Produits en alerte de stock : ${context.produits_en_alerte}
 
-Produits en alerte de réapprovisionnement :
-${context.alertes.map((a) => `  - ${a.nom} (${a.categorie}) : ${a.quantite} restants (seuil : ${a.seuil_alerte})`).join("\n")}
+📊 RÉPARTITION PAR CATÉGORIE :
+${context.par_categorie.map((c) => `  • ${c.categorie} : ${c.nb_produits} produits, ${c.stock_total} unités`).join("\n")}
 
-Réponds uniquement en lien avec ces données de stock. Sois concis et pratique dans tes recommandations.`;
+⚠️ PRODUITS EN ALERTE :
+${alertesText}
+
+RÈGLES DE RÉPONSE :
+- Réponds uniquement sur la base des données ci-dessus.
+- Structure tes réponses avec des titres et des listes quand c'est pertinent.
+- Donne des conseils concrets et actionnables.
+- Utilise un ton professionnel mais accessible.
+- Si une question ne concerne pas le stock, rappelle poliment ton rôle.`;
 
     const response = await axios.post(
       process.env.AI_BASE_URL ||
