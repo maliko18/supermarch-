@@ -27,8 +27,8 @@ Application web de gestion de stock pour supermarché avec assistant IA intégr�
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/<votre-utilisateur>/gestion-stock-supermarche.git
-cd gestion-stock-supermarche
+git clone https://github.com/maliko18/Supermarche-app.git
+cd Supermarche-app
 ```
 
 ### 2. Installer les dépendances
@@ -48,16 +48,19 @@ npm install
 Assurez-vous que MySQL est lancé, puis exécutez le script d initialisation :
 
 **Avec PowerShell (Windows/Wamp) :**
+
 ```powershell
 & "C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe" -u root --default-character-set=utf8mb4 -e "source C:/chemin/vers/le/projet/server/db/init.sql"
 ```
 
 **Avec un terminal Linux/Mac :**
+
 ```bash
 mysql -u root -p --default-character-set=utf8mb4 < server/db/init.sql
 ```
 
 **Avec phpMyAdmin :**
+
 1. Ouvrir http://localhost/phpmyadmin
 2. Onglet Importer
 3. Sélectionner le fichier server/db/init.sql
@@ -104,7 +107,7 @@ Ouvrir **http://localhost:5173** dans le navigateur.
 ## 📁 Structure du projet
 
 ```
-gestion-stock-supermarche/
+Supermarche-app/
 ├── client/                          # Frontend React (Vite)
 │   ├── index.html
 │   ├── vite.config.js               # Proxy /api → localhost:3001
@@ -149,23 +152,23 @@ gestion-stock-supermarche/
 
 ### Produits
 
-| Méthode | Route | Description |
-|---------|-------|-------------|
-| GET | /api/produits | Liste tous les produits |
-| GET | /api/produits?categorie=1 | Produits par catégorie |
-| GET | /api/produits/categories | Liste des catégories |
-| GET | /api/produits/alertes | Produits en stock faible |
-| GET | /api/produits/:id | Détail d un produit |
-| POST | /api/produits | Créer un produit |
-| PUT | /api/produits/:id | Modifier un produit |
-| DELETE | /api/produits/:id | Supprimer un produit |
+| Méthode | Route                     | Description              |
+| ------- | ------------------------- | ------------------------ |
+| GET     | /api/produits             | Liste tous les produits  |
+| GET     | /api/produits?categorie=1 | Produits par catégorie   |
+| GET     | /api/produits/categories  | Liste des catégories     |
+| GET     | /api/produits/alertes     | Produits en stock faible |
+| GET     | /api/produits/:id         | Détail d un produit      |
+| POST    | /api/produits             | Créer un produit         |
+| PUT     | /api/produits/:id         | Modifier un produit      |
+| DELETE  | /api/produits/:id         | Supprimer un produit     |
 
 ### Intelligence Artificielle
 
-| Méthode | Route | Description |
-|---------|-------|-------------|
-| POST | /api/ai/chat | Poser une question à l IA (body: { "question": "..." }) |
-| GET | /api/ai/recommandations | Obtenir des recommandations de réapprovisionnement |
+| Méthode | Route                   | Description                                             |
+| ------- | ----------------------- | ------------------------------------------------------- |
+| POST    | /api/ai/chat            | Poser une question à l IA (body: { "question": "..." }) |
+| GET     | /api/ai/recommandations | Obtenir des recommandations de réapprovisionnement      |
 
 ---
 
@@ -173,23 +176,23 @@ gestion-stock-supermarche/
 
 ### Table categories
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| id | INT AUTO_INCREMENT | Identifiant |
-| nom | VARCHAR(100) | Nom de la catégorie |
+| Colonne | Type               | Description         |
+| ------- | ------------------ | ------------------- |
+| id      | INT AUTO_INCREMENT | Identifiant         |
+| nom     | VARCHAR(100)       | Nom de la catégorie |
 
 ### Table produits
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| id | INT AUTO_INCREMENT | Identifiant |
-| nom | VARCHAR(255) | Nom du produit |
-| prix | DECIMAL(10,2) | Prix unitaire |
-| quantite | INT | Quantité en stock |
-| seuil_alerte | INT (défaut: 10) | Seuil de réapprovisionnement |
-| code_barres | VARCHAR(50) | Code-barres EAN |
-| emplacement | VARCHAR(50) | Rayon / emplacement |
-| categorie_id | INT (FK) | Référence vers categories.id |
+| Colonne      | Type               | Description                  |
+| ------------ | ------------------ | ---------------------------- |
+| id           | INT AUTO_INCREMENT | Identifiant                  |
+| nom          | VARCHAR(255)       | Nom du produit               |
+| prix         | DECIMAL(10,2)      | Prix unitaire                |
+| quantite     | INT                | Quantité en stock            |
+| seuil_alerte | INT (défaut: 10)   | Seuil de réapprovisionnement |
+| code_barres  | VARCHAR(50)        | Code-barres EAN              |
+| emplacement  | VARCHAR(50)        | Rayon / emplacement          |
+| categorie_id | INT (FK)           | Référence vers categories.id |
 
 ---
 
@@ -215,4 +218,3 @@ L assistant utilise l API **Groq** (modèle LLaMA 3.3 70B) avec injection de con
 ## 👥 Auteurs
 
 Projet réalisé dans le cadre du M1 Informatique — Méthodes Agiles.
-

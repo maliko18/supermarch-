@@ -1,209 +1,121 @@
-# Guide d'installation
+# Guide d'installation — Application de gestion de stock
 
-Ce document explique, étape par étape, comment installer et lancer l'application de gestion de stock sur une machine Windows.
+Voici une version claire et bien expliquée, étape par étape.
 
-## 1. Prérequis
+## Avant de commencer — Ce qu'il faut avoir installé
 
-Avant de démarrer, vérifier que les éléments suivants sont installés :
+Avant de toucher au projet, assure-toi que ces 4 outils sont présents sur ta machine Windows :
 
-- Node.js 18 ou version plus récente
-- npm
-- MySQL 8.x ou WampServer
-- Ollama
-- Git
+- Node.js 18+ — le moteur qui fait tourner le backend JavaScript
+- npm — le gestionnaire de paquets, installé automatiquement avec Node.js
+- MySQL 8.x (ou via WampServer / XAMPP) — la base de données
+- Git — pour récupérer le projet depuis GitHub
 
-## 2. Récupération du projet
+## Étape 1 — Récupérer le projet
 
-Si le projet n'est pas encore présent sur la machine :
+Ouvre un terminal et tape :
 
-1. Cloner le dépôt GitHub
-2. Ouvrir le dossier du projet dans VS Code
+```bash
+git clone https://github.com/maliko18/Supermarche-app.git
+cd Supermarche-app
+```
 
-Commande possible :
+Cela télécharge le projet sur ta machine et te place dedans.
 
-    git clone https://github.com/maliko18/supermarch-.git
+## Étape 2 — Installer les dépendances
 
-Puis :
+Le projet est divisé en deux parties : `server` (backend) et `client` (frontend). Chacune a ses propres librairies à installer.
 
-    cd supermarch-
+### Terminal 1 — Backend
 
-## 3. Installation des dépendances
+```bash
+cd server
+npm install
+```
 
-### Backend
+### Terminal 2 — Frontend
 
-Ouvrir un terminal dans le dossier server puis exécuter :
+```bash
+cd client
+npm install
+```
 
-    npm install
+## Étape 3 — Préparer la base de données
 
-### Frontend
+La base de données s'appelle `supermarche_stock`. Il faut la créer en exécutant le script SQL fourni dans le projet (`server/db/init.sql`).
 
-Ouvrir un second terminal dans le dossier client puis exécuter :
+### Option A — Via WampServer (ligne de commande)
 
-    npm install
+1. Lance **WampServer** (icône verte dans la barre des tâches).
+2. Vérifie que **MySQL** est bien actif.
+3. Ouvre **PowerShell** à la racine du projet (dossier `Supermarche-app`).
+4. Exécute la commande suivante (en adaptant le chemin si ta version MySQL est différente) :
 
-## 4. Configuration de la base de données
+```powershell
+& "C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe" -u root --default-character-set=utf8mb4 -e "source C:/Users/malik/OneDrive/Documents/M1 IM/s2/agile/developement/gestion de stock/server/db/init.sql"
+```
 
-La base utilisée par le projet s'appelle :
+5. Si tout est correct, la base `supermarche_stock` et les tables sont créées automatiquement.
 
-- supermarche_stock
+Commandes utiles de vérification :
 
-Le script SQL d'initialisation est situé dans :
+```powershell
+& "C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe" -u root -e "SHOW DATABASES;"
+& "C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe" -u root -e "USE supermarche_stock; SHOW TABLES;"
+```
 
-- server/db/init.sql
+En cas d'erreur "fichier introuvable" :
 
-### Option A : avec WampServer et MySQL en ligne de commande
+- vérifie le chemin de `mysql.exe` dans `C:\wamp64\bin\mysql\`
+- remplace `mysql8.4.7` par le dossier installé sur ta machine
+- vérifie que le chemin du script `init.sql` est correct
 
-1. Démarrer WampServer
-2. Vérifier que MySQL est actif
-3. Exécuter la commande suivante depuis la racine du projet :
+### Option B — Via phpMyAdmin (plus simple)
 
-   & "C:\wamp64\bin\mysql\mysql8.4.7\bin\mysql.exe" -u root --default-character-set=utf8mb4 -e "source C:/Users/malik/OneDrive/Documents/M1 IM/s2/agile/developement/gestion de stock/server/db/init.sql"
+1. Va sur http://localhost/phpmyadmin
+2. Onglet Importer
+3. Sélectionne le fichier `server/db/init.sql`
+4. Clique sur Exécuter
 
-### Option B : avec phpMyAdmin
+## Étape 4 — Configurer le backend
 
-1. Ouvrir http://localhost/phpmyadmin
-2. Aller dans l'onglet Importer
-3. Sélectionner le fichier server/db/init.sql
-4. Cliquer sur Exécuter
+Crée (ou modifie) le fichier `server/.env` avec ces informations :
 
-## 5. Configuration du backend
+```dotenv
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=supermarche_stock
+DB_PORT=3306
 
-Le fichier de configuration est :
+AI_API_KEY=ollama
+AI_MODEL=llama3.2:3b
+AI_BASE_URL=http://localhost:11434/v1/chat/completions
+AI_MAX_TOKENS=250
+AI_TEMPERATURE=0.3
+AI_STOCK_CACHE_MS=15000
+AI_MAX_ALERTS=10
+AI_TIMEOUT_MS=30000
+```
 
-- server/.env
+## Étape 5 — Lancer l'application
 
-Exemple de configuration attendue :
+Il faut deux terminaux ouverts en même temps.
 
-    DB_HOST=localhost
-    DB_USER=root
-    DB_PASSWORD=
-    DB_NAME=supermarche_stock
-    DB_PORT=3306
+### Terminal 1 — Backend
 
-    AI_API_KEY=ollama
-    AI_MODEL=llama3.2:3b
-    AI_BASE_URL=http://localhost:11434/v1/chat/completions
-    AI_MAX_TOKENS=250
-    AI_TEMPERATURE=0.3
-    AI_STOCK_CACHE_MS=15000
-    AI_MAX_ALERTS=10
-    AI_TIMEOUT_MS=30000
+```bash
+cd server
+npm run dev
+```
 
-## 6. Installation et préparation d'Ollama
+Le backend démarre sur http://localhost:3001
 
-### Installer Ollama
+### Terminal 2 — Frontend
 
-Télécharger Ollama depuis le site officiel :
+```bash
+cd client
+npm run dev
+```
 
-- https://ollama.com/download
-
-### Télécharger le modèle utilisé par le projet
-
-Dans un terminal, exécuter :
-
-    ollama pull llama3.2:3b
-
-### Vérifier qu'Ollama fonctionne
-
-Ollama écoute normalement sur le port 11434.
-
-Commande utile :
-
-    ollama list
-
-## 7. Lancement de l'application
-
-L'application nécessite deux terminaux.
-
-### Terminal 1 : backend
-
-Depuis le dossier server :
-
-    npm run dev
-
-Le backend démarre normalement sur :
-
-- http://localhost:3001
-
-### Terminal 2 : frontend
-
-Depuis le dossier client :
-
-    npm run dev
-
-Le frontend démarre normalement sur :
-
-- http://localhost:5173
-
-Si le port 5173 est déjà occupé, Vite utilisera automatiquement un autre port, par exemple 5174.
-
-## 8. Utilisation
-
-Une fois les deux serveurs lancés :
-
-1. Ouvrir l'adresse affichée par Vite dans le navigateur
-2. Accéder à la page d'accueil
-3. Sélectionner une catégorie
-4. Gérer les produits
-5. Utiliser l'assistant IA pour poser des questions sur le stock
-
-## 9. Fonctionnalités disponibles après installation
-
-Après installation, l'application permet notamment :
-
-- consultation des produits par catégorie
-- ajout, modification et suppression de produits
-- recherche produit dans une fenêtre dédiée
-- filtres et tri dans une modal dédiée
-- export CSV des produits
-- affichage du journal des actions
-- recommandations IA basées sur l'état réel du stock
-
-## 10. Vérifications en cas de problème
-
-### Le backend ne démarre pas
-
-Vérifier :
-
-- que MySQL est lancé
-- que le fichier server/.env est correct
-- que le port 3001 n'est pas déjà occupé
-
-### Le frontend ne voit pas les données
-
-Vérifier :
-
-- que le backend tourne bien
-- que le frontend tourne bien
-- que la base a été initialisée avec init.sql
-
-### L'IA répond lentement ou ne répond pas
-
-Vérifier :
-
-- qu'Ollama est bien démarré
-- que le modèle llama3.2:3b est bien téléchargé
-- que le fichier .env pointe vers Ollama
-
-## 11. Résumé rapide des commandes
-
-Installation :
-
-    cd server
-    npm install
-    cd ../client
-    npm install
-
-Téléchargement du modèle IA :
-
-    ollama pull llama3.2:3b
-
-Lancement :
-
-    cd server
-    npm run dev
-
-Dans un autre terminal :
-
-    cd client
-    npm run dev
+Le frontend démarre sur l'URL affichée par Vite (en général http://localhost:5173).
